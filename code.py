@@ -1,23 +1,47 @@
-import tkinter
+from tkinter import *
 
-presavesMaps = { "simple": [[0,1,1,1],
-                             [3,1,1,4],
-                              [2,1,1,0],
-                               [0,0,0,0]]} # for tests
+presavesMaps = { "simple": [[0,0,2,1,0],
+                             [0,3,2,2,1],
+                              [2,2,1,2,2],
+                               [2,1,2,4,1],
+                                [2,2,1,0,0]]} # for tests
 
 class Map:
     def clear(self, size):
         empty_map = []
         for i in range(size):
-            line = []
+            y = []
             for j in range(size):
-                line.append(0)
-            empty_map.append(line)
+                y.append(0)
+            empty_map.append(y)
         self.map = empty_map
     def set(self, map):
         self.map = map
     def display(self):
-        print(self.map)
+        fen = Tk()
+        grille = Canvas(fen, width=700, height=500, background='white')
+        size = int(500/(len(self.map)+1))
+        for y in range (1, len(self.map)+1):
+            for x in range (len(self.map)):
+                decalage = (y * 0.55 +  x * 0.1) * size
+                hexagone = [(x)       * size + decalage, (y - 0.6) * size,
+                            (x + 0.5) * size + decalage, (y - 0.3) * size,
+                            (x + 0.5) * size + decalage, (y + 0.3) * size,
+                            (x)       * size + decalage, (y + 0.6) * size,
+                            (x - 0.5) * size + decalage, (y + 0.3) * size,
+                            (x - 0.5) * size + decalage, (y - 0.3) * size]
+                rond = [(x-0.2) * size + decalage, (y-0.2) * size,
+                        (x+0.2) * size + decalage, (y+0.2) * size,]
+                if self.map[y - 1][x] == 1:
+                    grille.create_polygon(hexagone, fill = 'black')
+                elif self.map[y - 1][x] >= 2:
+                    grille.create_polygon(hexagone, fill='grey')
+                if self.map[y - 1][x] == 3:
+                    grille.create_oval(rond, fill='red')
+                if self.map[y - 1][x] == 4:
+                    grille.create_oval(rond, fill='blue')
+        grille.pack()
+        fen.mainloop()
     def get_n(self, y, x): # temp (neighbours, possibles neighbours, possible x, possible y)
         ns = []
         pns = [(y-1,x), (y-1,x+1), (y,x-1), (y,x+1), (y+1,x-1), (y+1,x)]
@@ -28,5 +52,5 @@ class Map:
 
 map = Map()
 map.set(presavesMaps["simple"])
-map.display()
 print("voisins de '3': " + str(map.get_n(1,0)))
+map.display()
